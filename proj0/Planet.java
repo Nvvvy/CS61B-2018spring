@@ -8,6 +8,7 @@ public class Planet {
     public double mass;
     public String imgFileName;
 
+    /*Constant G to calculate Force*/
     public static final double G = 6.67e-11;
 
     /* First Planet Constructor:
@@ -73,6 +74,20 @@ public class Planet {
             else yy_net_force += this.calcForceExertedByY(p);
         }
         return yy_net_force;
+    }
+
+    /**
+     * Determin how much the forces exerted on the planet will cause that planet to accelerate
+     * @param dt time that force exerted on <this> planet
+     * @param xx_force x-force exerted on <this> planet
+     * @param yy_force y-force exerted on <this> planet
+     */
+    public void update(double dt, double xx_force, double yy_force) {
+        double xx_accel = xx_force / this.mass, yy_accel = yy_force / this.mass;
+        this.xxVel += dt * xx_accel;
+        this.yyVel += dt * yy_accel;
+        this.xxPos += dt * xxVel;
+        this.yyPos += dt * yyVel;
     }
 
 }
