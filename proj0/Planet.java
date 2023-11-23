@@ -94,7 +94,6 @@ public class Planet {
     public void draw() {
         String imgRoutine = "images/" + this.imgFileName;
         StdDraw.picture(this.xxPos, this.yyPos, imgRoutine);
-        StdDraw.show();
     }
 
 }
