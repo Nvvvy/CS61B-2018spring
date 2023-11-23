@@ -115,10 +115,5 @@ public class NBody {
 
 
 
-
-
-
-
-
     }
 }

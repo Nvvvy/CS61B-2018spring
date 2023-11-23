@@ -9,7 +9,7 @@ public class Planet {
     public String imgFileName;
 
     /*Constant G to calculate Force*/
-    public static final double G = 6.67e-11;
+    private static final double G = 6.67e-11;
 
     /* First Planet Constructor:
      * given postion, velocity, mass and img
