@@ -90,4 +90,11 @@ public class Planet {
         this.yyPos += dt * yyVel;
     }
 
+    /*Draw a planet corresponding to <this> position and img */
+    public void draw() {
+        String imgRoutine = "images/" + this.imgFileName;
+        StdDraw.picture(this.xxPos, this.yyPos, imgRoutine);
+        StdDraw.show();
+    }
+
 }
