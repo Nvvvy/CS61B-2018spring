@@ -82,20 +82,24 @@ public class IntList {
     public static IntList dcatenate(IntList A, IntList B) {
         if (A == null) {
             return B;
-        } else A.rest = dcatenate(A.rest, B);
-        return A;
+        } else {
+            A.rest = dcatenate(A.rest, B);
+            return A;
+        }
     }
-
+    
     /**
      * Returns a list consisting of the elements of A followed by the
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        IntList AthenB;
+        IntList a_then_b;
         if (A == null) {
-            AthenB = B;
-        } else AthenB = new IntList(A.first, catenate(A.rest, B));
-        return AthenB;
+            a_then_b = B;
+        } else {
+            a_then_b = new IntList(A.first, catenate(A.rest, B));
+        }
+        return a_then_b;
     }
 
 
