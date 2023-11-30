@@ -16,10 +16,12 @@ public class ArrayDeque<T> {
         T[] newItems = (T[]) new Object[capacity];
 
         /* copy the elements */
-        int rightItems = items.length - minusOne(nextFirst);
+        int theFirst = plusOne(nextFirst); //index of the first item in <items>
+        int rightItems = items.length - theFirst;
         int leftItems = size - rightItems;
-        int copyStartIndex = capacity - rightItems;
-        System.arraycopy(items, minusOne(nextFirst), newItems, copyStartIndex, items.length - minusOne(nextFirst));
+        int copyStartIndex = capacity - rightItems; // index where starts to copy the right side items
+
+        System.arraycopy(items, theFirst, newItems, copyStartIndex, rightItems);
         System.arraycopy(items, 0, newItems, 0, leftItems);
 
         /* update the indices of elements */
@@ -144,13 +146,4 @@ public class ArrayDeque<T> {
         }
     }
 
-    public static void main(String[] args) {
-        ArrayDeque k = new ArrayDeque();
-        System.out.println(k.isEmpty());
-        k.addLast(0);
-        k.removeLast();
-        k.addLast(2);
-        k.removeFirst();
-        System.out.println(k.isEmpty());
-    }
 }
