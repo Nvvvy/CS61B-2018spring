@@ -17,17 +17,21 @@ public class ArrayDeque<T> {
 
         /* copy the elements */
         int theFirst = plusOne(nextFirst); //index of the first item in <items>
-        int rightItems = items.length - theFirst;
+        int rightItems = Math.min(size, items.length - theFirst);
         int leftItems = size - rightItems;
         int copyStartIndex = capacity - rightItems; // index where starts to copy the right side items
 
         System.arraycopy(items, theFirst, newItems, copyStartIndex, rightItems);
         System.arraycopy(items, 0, newItems, 0, leftItems);
+        items = newItems;
 
         /* update the indices of elements */
         nextFirst = minusOne(copyStartIndex);
-
-        items = newItems;
+        if (copyStartIndex + size > items.length) {
+            nextLast = rightItems;
+        } else {
+            nextLast = plusOne(copyStartIndex + size - 1);
+        }
     }
 
 
