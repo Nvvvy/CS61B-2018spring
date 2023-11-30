@@ -95,7 +95,7 @@ public class ArrayDeque<T> {
 
         double capacityUsage = Double.valueOf(size - 1) / Double.valueOf(items.length);
 
-        if (capacityUsage < 0.25) {
+        if (capacityUsage < 0.25 & items.length > 8) {
             reSize(items.length / 2);
         }
 
@@ -112,7 +112,7 @@ public class ArrayDeque<T> {
 
         double capacityUsage = Double.valueOf(size - 1) / Double.valueOf(items.length);
 
-        if (capacityUsage < 0.25) {
+        if (capacityUsage < 0.25 & items.length > 8) {
             reSize(items.length / 2);
         }
 
@@ -142,8 +142,8 @@ public class ArrayDeque<T> {
         }
     }
 
-//    public static void main(String[] args) {
-//        ArrayDeque k = new ArrayDeque();
+    public static void main(String[] args) {
+        ArrayDeque k = new ArrayDeque();
 //        k.addFirst(10);
 //        k.addLast(20);
 //        k.addLast(30);
@@ -166,5 +166,10 @@ public class ArrayDeque<T> {
 //        k.removeFirst();
 //        k.removeFirst();
 //        k.printDeque();
-//    }
+        System.out.println(k.isEmpty());
+        k.addFirst(0);
+        k.addFirst(1);
+        k.removeFirst();
+
+    }
 }
