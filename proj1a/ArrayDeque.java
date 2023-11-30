@@ -28,7 +28,7 @@ public class ArrayDeque<T> {
         /* update the indices of elements */
         nextFirst = minusOne(copyStartIndex);
         if (copyStartIndex + size > items.length) {
-            nextLast = rightItems;
+            nextLast = leftItems;
         } else {
             nextLast = plusOne(copyStartIndex + size - 1);
         }
