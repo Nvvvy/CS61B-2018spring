@@ -91,35 +91,42 @@ public class ArrayDeque<T> {
     }
 
     public T removeFirst() {
-        T removed = items[theFirst];
-
-        double capacityUsage = Double.valueOf(size - 1) / Double.valueOf(items.length);
-
-        if (capacityUsage < 0.25 & items.length > 8) {
-            reSize(items.length / 2);
+        if (this.isEmpty()) {
+            return null;
         }
 
+        T removed = items[theFirst];
         items[theFirst] = null;
         nextFirst = theFirst;
         theFirst = plusOne(theFirst);
         size -= 1;
-        return removed;
-    }
 
-    public T removeLast() {
-        int theLast = minusOne(nextLast);
-        T removed = items[theLast];
-
-        double capacityUsage = Double.valueOf(size - 1) / Double.valueOf(items.length);
+        double capacityUsage = Double.valueOf(size) / Double.valueOf(items.length);
 
         if (capacityUsage < 0.25 & items.length > 8) {
             reSize(items.length / 2);
         }
 
+        return removed;
+    }
+
+    public T removeLast() {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        int theLast = minusOne(nextLast);
+        T removed = items[theLast];
         items[theLast] = null;
         nextLast = theLast;
-
         size -= 1;
+
+        double capacityUsage = Double.valueOf(size) / Double.valueOf(items.length);
+
+        if (capacityUsage < 0.25 & items.length > 8) {
+            reSize(items.length / 2);
+        }
+
         return removed;
     }
 
@@ -142,34 +149,33 @@ public class ArrayDeque<T> {
         }
     }
 
-    public static void main(String[] args) {
-        ArrayDeque k = new ArrayDeque();
-//        k.addFirst(10);
-//        k.addLast(20);
-//        k.addLast(30);
-//        k.addLast(40);
-//        k.addLast(50);
-//        k.addLast(60);
-//        k.addLast(70);
-//        k.addLast(80);
-//        k.addLast(90);
+//    public static void main(String[] args) {
+//        ArrayDeque k = new ArrayDeque();
+////        k.addFirst(10);
+////        k.addLast(20);
+////        k.addLast(30);
+////        k.addLast(40);
+////        k.addLast(50);
+////        k.addLast(60);
+////        k.addLast(70);
+////        k.addLast(80);
+////        k.addLast(90);
+////        k.addFirst(0);
+////        k.addLast(100);
+////        k.printDeque();
+////        k.removeLast();
+////        k.removeLast();
+////        k.removeLast();
+////        k.removeLast();
+////        k.removeFirst();
+////        k.removeFirst();
+////        k.removeFirst();
+////        k.removeFirst();
+////        k.removeFirst();
+////        k.printDeque();
+//        System.out.println(k.isEmpty());
 //        k.addFirst(0);
-//        k.addLast(100);
-//        k.printDeque();
 //        k.removeLast();
-//        k.removeLast();
-//        k.removeLast();
-//        k.removeLast();
-//        k.removeFirst();
-//        k.removeFirst();
-//        k.removeFirst();
-//        k.removeFirst();
-//        k.removeFirst();
-//        k.printDeque();
-        System.out.println(k.isEmpty());
-        k.addFirst(0);
-        k.addFirst(1);
-        k.removeFirst();
-
-    }
+//        System.out.println(k.get(-1));
+//    }
 }
