@@ -41,6 +41,8 @@ public class TestPalindrome {
         obo.equalChars('a', 'e');
         obo.equalChars('z', 'a');
         obo.equalChars('a', 'a');
-
+        obo.equalChars('a', 'B');
+        obo.equalChars('&', '&');
+        obo.equalChars('&', '#');
     }
 }
