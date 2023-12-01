@@ -35,6 +35,7 @@ public class TestPalindrome {
         /* Return true */
         obo.equalChars('a', 'b');
         obo.equalChars('r', 'q');
+        obo.equalChars('&', '%');
 
         /* Return false*/
         obo.equalChars('a', 'e');
