@@ -30,19 +30,26 @@ public class TestPalindrome {
 
     @Test
     public void testIsPalindromeOffByOne() {
-        OffByOne obo = new OffByOne();
+        CharacterComparator cc = new OffByOne();
 
-        /* Return true */
-        obo.equalChars('a', 'b');
-        obo.equalChars('r', 'q');
-        obo.equalChars('&', '%');
+        assertFalse(palindrome.isPalindrome("cat", cc));
+        assertFalse(palindrome.isPalindrome("%%", cc));
 
-        /* Return false*/
-        obo.equalChars('a', 'e');
-        obo.equalChars('z', 'a');
-        obo.equalChars('a', 'a');
-        obo.equalChars('a', 'B');
-        obo.equalChars('&', '&');
-        obo.equalChars('&', '#');
+        assertTrue(palindrome.isPalindrome("&%", cc));
+        assertTrue(palindrome.isPalindrome("flake", cc));
+        assertTrue(palindrome.isPalindrome("x", cc));
+        assertTrue(palindrome.isPalindrome("", cc));
+    }
+
+    @Test
+    public void testIsPalindromeOffByN() {
+        CharacterComparator cc = new OffByN(5);
+
+        assertTrue(palindrome.isPalindrome("af", cc));
+        assertTrue(palindrome.isPalindrome("fa", cc));
+        assertTrue(palindrome.isPalindrome("fha", cc));
+
+        assertFalse(palindrome.isPalindrome("fah", cc));
+        assertFalse(palindrome.isPalindrome("&%", cc));
     }
 }
