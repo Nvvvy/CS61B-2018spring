@@ -87,7 +87,7 @@ public class IntList {
             return A;
         }
     }
-    
+
     /**
      * Returns a list consisting of the elements of A followed by the
      * * elements of B.  May NOT modify items of A.  Use 'new'.
@@ -100,6 +100,31 @@ public class IntList {
             a_then_b = new IntList(A.first, catenate(A.rest, B));
         }
         return a_then_b;
+    }
+
+    /**
+     * if 2 numbers in a row are the same, we add them together and make one large node.
+     * 1 → 1 → 2 → 3 becomes 2 → 2 → 3 which becomes 4 → 3
+     */
+    public void addAdjacent() {
+        IntList p = this;
+        while (p.rest != null) {
+            if (p.first == p.rest.first) {
+                first *= 2;
+                rest = rest.rest;
+            } else {
+                p = p.rest;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        IntList a = new IntList(3, null);
+        IntList b = new IntList(2, a);
+        IntList c = new IntList(1, b);
+        IntList d = new IntList(1, c);
+        d.addAdjacent();
+        int i = d.first;
     }
 
 

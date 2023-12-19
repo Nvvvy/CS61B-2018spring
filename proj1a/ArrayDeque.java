@@ -25,7 +25,7 @@ public class ArrayDeque<T> {
         System.arraycopy(items, 0, newItems, 0, leftItems);
         items = newItems;
 
-        /* update the indices of elements */
+        /* update the indices of nextFirst & nextLast */
         nextFirst = minusOne(copyStartIndex);
         if (copyStartIndex + size > items.length) {
             nextLast = leftItems;

@@ -1,7 +1,6 @@
-// TODO: Make sure to make this class a part of the synthesizer package
-//package <package name>;
 
-//Make sure this class is public
+package synthesizer;
+
 public class GuitarString {
     /** Constants. Do not change. In case you're curious, the keyword final means
      * the values cannot be changed at runtime. We'll discuss this and other topics
@@ -18,6 +17,11 @@ public class GuitarString {
         //       cast the result of this divsion operation into an int. For better
         //       accuracy, use the Math.round() function before casting.
         //       Your buffer should be initially filled with zeros.
+        double capacity = Math.round(SR / frequency);
+        buffer = new ArrayRingBuffer<>((int) capacity);
+        for (int i = 0; i < capacity; i += 1) {
+            buffer.enqueue(0.0);
+        }
     }
 
 
@@ -28,20 +32,31 @@ public class GuitarString {
         //       double r = Math.random() - 0.5;
         //
         //       Make sure that your random numbers are different from each other.
+        for (int i = 0; i < buffer.capacity(); i += 1) {
+            buffer.dequeue();
+        }
+        for (int i = 0; i < buffer.capacity(); i += 1) {
+            double r = Math.random() - 0.5;
+            buffer.enqueue(r);
+        }
     }
 
     /* Advance the simulation one time step by performing one iteration of
-     * the Karplus-Strong algorithm. 
+     * the Karplus-Strong algorithm.
      */
     public void tic() {
         // TODO: Dequeue the front sample and enqueue a new sample that is
         //       the average of the two multiplied by the DECAY factor.
         //       Do not call StdAudio.play().
+        double front = buffer.dequeue();
+        double next = buffer.peek();
+        double replace = DECAY * (front + next) * 0.5;
+        buffer.enqueue(replace);
     }
 
     /* Return the double at the front of the buffer. */
     public double sample() {
         // TODO: Return the correct thing.
-        return 0;
+        return buffer.peek();
     }
 }

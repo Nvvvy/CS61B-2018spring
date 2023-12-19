@@ -19,7 +19,7 @@ public class ArrayDeque<T> implements Deque<T> {
         int theFirst = plusOne(nextFirst); //index of the first item in <items>
         int rightItems = Math.min(size, items.length - theFirst);
         int leftItems = size - rightItems;
-        int copyStartIndex = capacity - rightItems; // index where starts to copy the right side items
+        int copyStartIndex = capacity - rightItems;
 
         System.arraycopy(items, theFirst, newItems, copyStartIndex, rightItems);
         System.arraycopy(items, 0, newItems, 0, leftItems);
