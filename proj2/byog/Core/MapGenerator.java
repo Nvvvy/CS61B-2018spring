@@ -25,9 +25,9 @@ public class MapGenerator {
      *  Reads the argument of player's input, then convert it to seed
      *  @param input the string inputted by player */
     public static long inputParser(String input) {
-        if ((!input.startsWith("N")) && (!input.endsWith("S"))) {
-            throw new RuntimeException("the init command starts with N and ends up with S");
-        }
+//        if ((!input.startsWith("N")) && (!input.endsWith("S"))) {
+//            throw new RuntimeException("the init command starts with N and ends up with S");
+//        }
         String seedStr = input.substring(1, input.length() - 1);
         return Long.parseLong(seedStr);
     }
