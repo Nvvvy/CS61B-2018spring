@@ -26,10 +26,7 @@ public class GameUI {
         drawMenu();
 
         menuOperation();
-
-
-//        seed = getSeed();
-//        startGame();
+        startGame();
     }
 
     // execute different command according to the options in menu
@@ -40,18 +37,18 @@ public class GameUI {
         gameOn = false;
         while (!gameOn) {
             if (StdDraw.isKeyPressed('N') || StdDraw.isKeyPressed('n')) {
-                boolean inputDone = false;
-                while (!inputDone) {
+                boolean gotSeed = false;
+                while (!gotSeed) {
                     drawMenu();
                     StdDraw.text(uiWidth / 2, uiHeight / 2 - 8, "Input a number to start a new game:");
                     StdDraw.show();
 
                     //get input seed
-                    String userInput = GameUI.getInput('s').substring(1);
+                    String userInput = getSeed('s').substring(1);
                     seed = Long.parseLong(userInput);
-                    inputDone = true;
+                    gotSeed = true;
 
-                    StdDraw.text(uiWidth / 2, uiHeight / 2 - 9, userInput);
+                    StdDraw.text(uiWidth / 2, uiHeight / 2 - 10, userInput);
                     StdDraw.show();
                 }
                 map = new MapGenerator(seed); // instantiate the map
@@ -79,7 +76,6 @@ public class GameUI {
     }
 
     public void startGame() {
-        MapGenerator map = new MapGenerator(seed);
         gameOn = true;
 
         while (gameOn) {
@@ -152,7 +148,7 @@ public class GameUI {
     }
 
     // get the user input string, except the last char c
-    private static String getInput(char c) {
+    private static String getSeed(char c) {
         String input = "";
 
         while (true) {
@@ -170,12 +166,6 @@ public class GameUI {
     }
 
 
-    public void drawFrame() {
-        if (gameOn) {
-
-            drawHud();
-        }
-    }
 
     public void drawHud() {
 
