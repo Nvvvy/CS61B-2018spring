@@ -39,17 +39,10 @@ public class GameUI {
             if (StdDraw.isKeyPressed('N') || StdDraw.isKeyPressed('n')) {
                 boolean gotSeed = false;
                 while (!gotSeed) {
-                    drawMenu();
-                    StdDraw.text(uiWidth / 2, uiHeight / 2 - 8, "Input a number to start a new game:");
-                    StdDraw.show();
-
                     //get input seed
                     String userInput = getSeed('s').substring(1);
                     seed = Long.parseLong(userInput);
                     gotSeed = true;
-
-                    StdDraw.text(uiWidth / 2, uiHeight / 2 - 10, userInput);
-                    StdDraw.show();
                 }
                 map = new MapGenerator(seed); // instantiate the map
                 gameOn = true; // break the loop
@@ -79,7 +72,6 @@ public class GameUI {
         gameOn = true;
 
         while (gameOn) {
-            drawFrame();
             drawHud();
 
         }
@@ -126,12 +118,6 @@ public class GameUI {
     }
 
 
-    public void flashSequence() {
-        gameCmd = "";
-        while (!gameCmd.endsWith("Q")) {
-            drawFrame();
-        }
-    }
 
     public String solicitNCharsInput(int n) {
         String input = "";
@@ -148,10 +134,11 @@ public class GameUI {
     }
 
     // get the user input string, except the last char c
-    private static String getSeed(char c) {
+    private String getSeed(char c) {
         String input = "";
 
         while (true) {
+            StdDraw.clear(Color.black);
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
             }
@@ -159,7 +146,11 @@ public class GameUI {
             if (key == c || key == Character.toUpperCase(c)) {
                 break;
             } else {
+                drawMenu();
+                StdDraw.text(uiWidth / 2, uiHeight / 2 - 8, "Input a number to start a new game:");
                 input += String.valueOf(key);
+                StdDraw.text(uiWidth / 2, uiHeight / 2 - 10, input.substring(1));
+                StdDraw.show();
             }
         }
         return input;
