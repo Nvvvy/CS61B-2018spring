@@ -10,15 +10,29 @@ public class MapGenerator {
     private static int roomCount;
     private Room[] rooms;
     private static Random RANDOM;
-    public TETile[][] world = new TETile[Game.WIDTH][Game.HEIGHT];
+    private TETile[][] world = new TETile[Game.WIDTH][Game.HEIGHT];
+
+    //Phase 2: add player, key and gate
+    private Player player;
+    private Position keyPos;
+    private Position gatePos;
+    private boolean unlocked;
 
     public MapGenerator(long seed) {
         RANDOM = new Random(seed);
         roomCount = RANDOM.nextInt(5) + MINROOMS;
-        rooms = (Room []) new Room[roomCount];
+        rooms = new Room[roomCount];
         fillWithNothing();
         placeRooms();
         randomlyConnectRooms();
+        player = new Player();
+        keyPos = placeKey();
+        gatePos = placeGate();
+        renderOthers();
+    }
+
+    public TETile[][] finalWorld() {
+        return world;
     }
 
     /**
@@ -34,7 +48,7 @@ public class MapGenerator {
 
     /* Returns whether a position is out of the map */
     public static boolean outOfBound(Position pos) {
-        return pos.x < 0 || pos.x >= Game.WIDTH || pos.y < 0 || pos.y >= Game.HEIGHT;
+        return pos.x < 1 || pos.x >= Game.WIDTH -1 || pos.y < 2 || pos.y >= Game.HEIGHT - 1;
     }
 
     /* Returns whether a room could be placed on the map */
@@ -54,11 +68,7 @@ public class MapGenerator {
                 || world[bottomRight.x][bottomRight.y] != Tileset.NOTHING
                 || world[topLeft.x][topLeft.y] != Tileset.NOTHING
                 || world[topRight.x][topRight.y] != Tileset.NOTHING;
-            if (inOtherRoom) {
-                return false;
-            } else {
-                return true;
-            }
+            return !inOtherRoom;
         }
     }
 
@@ -131,7 +141,8 @@ public class MapGenerator {
     }
 
     /* Calculates the vertical distance between A and B
-      Returns a negative number or 0 if two rooms can be connected with a horizontal straight line */
+      Returns a negative number or 0
+      if two rooms can be connected with a horizontal straight line */
     private int verticalDistance(Room A, Room B) {
         if (A.position.y < B.position.y) {
             return  (B.position.y - A.position.y) - A.roomHeight;
@@ -201,8 +212,10 @@ public class MapGenerator {
     /* Connect room A,B with L hallway */
     private void lConnect(Room roomA, Room roomB) {
         //Generate a random point in Room A,B respectively
-        Position A = randomPosition(roomA.position.x, roomA.position.y, roomA.roomWidth, roomA.roomHeight);
-        Position B = randomPosition(roomB.position.x, roomB.position.y, roomB.roomWidth, roomB.roomHeight);
+        Position A = randomPosition(roomA.position.x, roomA.position.y,
+                roomA.roomWidth, roomA.roomHeight);
+        Position B = randomPosition(roomB.position.x, roomB.position.y,
+                roomB.roomWidth, roomB.roomHeight);
         // find top-left and bottom-left of the probably L hallway routine;
         Position bottomLeft = Position.findBottomLeft(A, B);
         Position topLeft = Position.findTopLeft(A, B);
@@ -246,6 +259,112 @@ public class MapGenerator {
     private void randomlyConnectRooms() {
         for (int i = 1; i < roomCount; i += 1) {
             connectRoom(rooms[i - 1], rooms[i]);
+        }
+    }
+
+    /* Render player, gate and key */
+    private void renderOthers() {
+        if (!player.hasKey) {
+            world[keyPos.x][keyPos.y] = Tileset.FLOWER;
+        }
+        if (unlocked) {
+            world[gatePos.x][gatePos.y] = Tileset.UNLOCKED_DOOR;
+        } else {
+            world[gatePos.x][gatePos.y] = Tileset.LOCKED_DOOR;
+        }
+        world[player.currPos.x][player.currPos.y] = Tileset.PLAYER;
+    }
+
+    // Place a key in a random room
+    private Position placeKey() {
+        Room keyRoom = rooms[roomCount - 1];
+        return randomPosition(keyRoom.position.x, keyRoom.position.y,
+                keyRoom.roomWidth, keyRoom.roomHeight);
+    }
+
+    // generate a gate
+    private Position placeGate() {
+        Room gateRoom = rooms[roomCount / 2];
+        Position randPos = randomPosition(gateRoom.position.x, gateRoom.position.y,
+                gateRoom.roomWidth, gateRoom.roomWidth);
+        int x = randPos.x;
+        int y = randPos.y;
+        int direction = RANDOM.nextInt(4);
+        switch (direction) {
+            case 1:
+                // move up to find edge
+                while (world[x][y + 1] != Tileset.NOTHING) {
+                    y += 1;
+                }
+                break;
+            case 2:
+                // move down
+                while (world[x][y - 1] != Tileset.NOTHING) {
+                    y -= 1;
+                }
+                break;
+            case 3:
+                // move left
+                while (world[x - 1][y] != Tileset.NOTHING) {
+                    x -= 1;
+                }
+                break;
+            case 4:
+                // move right
+                while (world[x + 1][y] != Tileset.NOTHING) {
+                    x += 1;
+                }
+                break;
+        }
+        return new Position(x, y);
+    }
+
+    public void unlockGate() {
+        int gateDist = Math.abs(player.currPos.x - gatePos.x) + Math.abs(player.currPos.y - gatePos.y);
+        if (gateDist <= 1) {
+            unlocked = true;
+        }
+    }
+
+    /* the character Object */
+    public class Player {
+        private Position currPos;
+        private boolean hasKey;
+
+        public Player() {
+            Room bornRoom = rooms[0];
+            currPos = randomPosition(bornRoom.position.x, bornRoom.position.y,
+                    bornRoom.roomWidth, bornRoom.roomHeight);
+            hasKey = false;
+        }
+
+        public void move(char cmd) {
+            int x = currPos.x;
+            int y = currPos.y;
+            if (cmd == 'w' || cmd == 'W') {
+                if (world[x][y + 1] == Tileset.FLOOR) {
+                    currPos = new Position(x, y + 1);
+                }
+            }
+            if (cmd == 's' || cmd == 'S') {
+                if (world[x][y - 1] == Tileset.FLOOR) {
+                    currPos = new Position(x, y + 1);
+                }
+            }
+            if (cmd == 'a' || cmd == 'A') {
+                if (world[x - 1][y] == Tileset.FLOOR) {
+                    currPos = new Position(x - 1, y);
+                }
+            }
+            if (cmd == 'd' || cmd == 'D') {
+                if (world[x + 1][y] == Tileset.FLOOR) {
+                    currPos = new Position(x + 1, y);
+                }
+            }
+        }
+
+        public boolean reachKey(Position key) {
+            return Math.abs(currPos.x - key.x) <= 1 && Math.abs(currPos.y - key.y) <= 1;
         }
     }
 
@@ -313,7 +432,7 @@ public class MapGenerator {
 //    public static void main(String[] args) {
 //        // read the arg, AKA: seed. convert input string to long
 //        // String input = args[0]; the real command
-//        String input = "N22029278579S"; // a test arg for Junit
+//        String input = "N223S"; // a test arg for Junit
 //        long seed = inputParser(input);
 //
 //        // Test: initialize the tile rendering engine with a window of size WIDTH x HEIGHT

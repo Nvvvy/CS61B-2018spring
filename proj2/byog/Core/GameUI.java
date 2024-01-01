@@ -15,7 +15,7 @@ public class GameUI {
     private long seed;
     private MapGenerator map;
     private boolean gameOn;
-    private String gameCmd; //  F: interact Q: quit and save W: up A: left S: down D: right
+    private String gameCmd;
 
     public GameUI() {
         uiWidth = Game.WIDTH;
