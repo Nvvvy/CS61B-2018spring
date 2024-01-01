@@ -8,19 +8,18 @@ import java.awt.*;
 public class GameUI {
     private final int uiWidth;
     private final int uiHeight;
-    private long seed;
-    private boolean gameOn;
-    private String gameCmd; //  F: interact Q: quit and save W: up A: left S: down D: right
-
     private static final int TILE_SIZE = 16;
     private int xOffset;
     private int yOffset;
 
+    private long seed;
     private MapGenerator map;
+    private boolean gameOn;
+    private String gameCmd; //  F: interact Q: quit and save W: up A: left S: down D: right
 
     public GameUI() {
         uiWidth = Game.WIDTH;
-        uiHeight = Game.HEIGHT + 2; // 2 more tiles height for HUD
+        uiHeight = Game.HEIGHT; // 2 more tiles height for HUD
 
         initCanvas();
         drawMenu();
@@ -40,8 +39,7 @@ public class GameUI {
                 boolean gotSeed = false;
                 while (!gotSeed) {
                     //get input seed
-                    String userInput = getSeed('s').substring(1);
-                    seed = Long.parseLong(userInput);
+                    seed = Long.parseLong(getSeed('s'));
                     gotSeed = true;
                 }
                 map = new MapGenerator(seed); // instantiate the map
@@ -58,22 +56,26 @@ public class GameUI {
 
         StdDraw.setCanvasSize(uiWidth * TILE_SIZE, uiHeight * TILE_SIZE);
         StdDraw.setXscale(0, uiWidth);
-        StdDraw.setYscale(0, Game.HEIGHT);
+        StdDraw.setYscale(0, uiHeight);
         StdDraw.clear(new Color(0, 0, 0));
 
         StdDraw.enableDoubleBuffering();
     }
 
     public void initCanvas() {
-        initCanvas(0, 1);
+        initCanvas(0, 0);
     }
 
     public void startGame() {
         gameOn = true;
 
         while (gameOn) {
-            drawHud();
-
+            TETile[][] world = map.finalWorld();
+            drawWorld(world);
+//            gameCmd = solicitNCharsInput('q');
+//            if (StdDraw.isKeyPressed('Q') || StdDraw.isKeyPressed('q')) {
+//                gameOn = false;
+//            }
         }
     }
 
@@ -94,6 +96,12 @@ public class GameUI {
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
+
+        // Draw HUD
+        StdDraw.setPenColor(Color.white);
+        StdDraw.line(0, 2, uiWidth, 2);
+        StdDraw.textLeft(2, 1, "Q: exit game | W: up; | A: left | S: down | D: right");
+        StdDraw.show();
     }
 
 
@@ -119,17 +127,18 @@ public class GameUI {
 
 
 
-    public String solicitNCharsInput(int n) {
+    public String solicitNCharsInput(char c) {
         String input = "";
 
-        while (input.length() < n) {
+        while (gameOn) {
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
             }
             char key = StdDraw.nextKeyTyped();
             input += String.valueOf(key);
+            TETile[][] world = map.finalWorld();
+            drawWorld(world);
         }
-        StdDraw.pause(500);
         return input;
     }
 
@@ -148,19 +157,16 @@ public class GameUI {
             } else {
                 drawMenu();
                 StdDraw.text(uiWidth / 2, uiHeight / 2 - 8, "Input a number to start a new game:");
+                StdDraw.text(uiWidth / 2, uiHeight / 2 - 12, "press S to START");
                 input += String.valueOf(key);
                 StdDraw.text(uiWidth / 2, uiHeight / 2 - 10, input.substring(1));
                 StdDraw.show();
             }
         }
-        return input;
+        return input.substring(1);
     }
 
 
-
-    public void drawHud() {
-
-    }
 
 //    private TETile[][] worldStatus() {
 //
