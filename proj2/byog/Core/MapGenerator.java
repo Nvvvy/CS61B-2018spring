@@ -13,7 +13,7 @@ public class MapGenerator {
     private TETile[][] world = new TETile[Game.WIDTH][Game.HEIGHT];
 
     //Phase 2: add player, key and gate
-    public Player player;
+    private Player player;
     private Position keyPos;
     private Position gatePos;
     private boolean unlocked;
@@ -43,7 +43,7 @@ public class MapGenerator {
      *  @param input the string inputted by player */
     public static long seedParser(String input) {
         String seedStr = "";
-        if (input.charAt(0) == 'n'|| input.charAt(0) == 'N') {
+        if (input.charAt(0) == 'n' || input.charAt(0) == 'N') {
             int i = 1;
             while (input.charAt(i) != 's' && input.charAt(i) != 'S') {
                 seedStr += String.valueOf(input.charAt(i));
@@ -68,12 +68,13 @@ public class MapGenerator {
         // move player step by step
         String cmdSeries = "";
         while (i < len) {
-            if (input.charAt(i) == 'q' || input.charAt(i) == 'Q') {
-                if (input.charAt(i + 1) == 'l' || input.charAt(i + 1) == 'L') {
+            if ((input.charAt(i) == ':') &&
+                    (input.charAt(i + 1) == 'q' || input.charAt(i + 1) == 'Q')) {
+                if (i == len - 2) {
+                    break;
+                } else if (input.charAt(i + 2) == 'l' || input.charAt(i + 2) == 'L') {
                     i += 2;
                     continue;
-                } else {
-                    break;
                 }
             }
             char cmd = input.charAt(i);
@@ -87,7 +88,7 @@ public class MapGenerator {
 
     /* Returns whether a position is out of the map */
     public static boolean outOfBound(Position pos) {
-        return pos.x < 1 || pos.x >= Game.WIDTH -1 || pos.y < 2 || pos.y >= Game.HEIGHT - 1;
+        return pos.x < 1 || pos.x >= Game.WIDTH - 1 || pos.y < 2 || pos.y >= Game.HEIGHT - 1;
     }
 
     /* Returns whether a room could be placed on the map */
@@ -356,8 +357,14 @@ public class MapGenerator {
                     x += 1;
                 }
                 break;
+            default:
+                break;
         }
         return new Position(x, y);
+    }
+
+    public void movePlayer(char cmd) {
+        player.move(cmd);
     }
 
 
@@ -478,22 +485,4 @@ public class MapGenerator {
             return new Position(xPos, yPos);
         }
     }
-
-
-//    public static void main(String[] args) {
-//        // read the arg, AKA: seed. convert input string to long
-//        // String input = args[0]; the real command
-//        String input = "N223S"; // a test arg for Junit
-//        long seed = inputParser(input);
-//
-//        // Test: initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-//        TERenderer ter = new TERenderer();
-//        ter.initialize(Game.WIDTH, Game.HEIGHT);
-//
-//        // init the world
-//        MapGenerator initMap = new MapGenerator(seed);
-//
-//        // Test: draws the world to the screen
-//        ter.renderFrame(initMap.world);
-//    }
 }

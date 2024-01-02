@@ -93,7 +93,7 @@ public class GameUI {
                             + " is null.");
                 }
                 world[x][y].draw(x + xOffset, y + yOffset);
-                map.renderOthers();// render player, key, gate
+                map.renderOthers(); // render player, key, gate
             }
         }
 
@@ -143,7 +143,7 @@ public class GameUI {
                 break;
             } else {
                 input += String.valueOf(key);
-                map.player.move(key);
+                map.movePlayer(key);
                 TETile[][] world = map.finalWorld();
                 drawWorld(world);
                 StdDraw.show();
