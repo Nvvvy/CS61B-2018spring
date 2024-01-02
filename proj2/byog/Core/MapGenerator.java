@@ -13,22 +13,25 @@ public class MapGenerator {
     private TETile[][] world = new TETile[Game.WIDTH][Game.HEIGHT];
 
     //Phase 2: add player, key and gate
-    private Player player;
+    public Player player;
     private Position keyPos;
     private Position gatePos;
     private boolean unlocked;
 
     public MapGenerator(long seed) {
+        // phase 1: map generator
         RANDOM = new Random(seed);
         roomCount = RANDOM.nextInt(5) + MINROOMS;
         rooms = new Room[roomCount];
         fillWithNothing();
         placeRooms();
         randomlyConnectRooms();
+
+        // phase 2: key, gate, player
+        unlocked = false;
         player = new Player();
         keyPos = placeKey();
         gatePos = placeGate();
-        renderOthers();
     }
 
     public TETile[][] finalWorld() {
@@ -38,12 +41,48 @@ public class MapGenerator {
     /**
      *  Reads the argument of player's input, then convert it to seed
      *  @param input the string inputted by player */
-    public static long inputParser(String input) {
-//        if ((!input.startsWith("N")) && (!input.endsWith("S"))) {
-//            throw new RuntimeException("the init command starts with N and ends up with S");
-//        }
-        String seedStr = input.substring(1, input.length() - 1);
+    public static long seedParser(String input) {
+        String seedStr = "";
+        if (input.charAt(0) == 'n'|| input.charAt(0) == 'N') {
+            int i = 1;
+            while (input.charAt(i) != 's' && input.charAt(i) != 'S') {
+                seedStr += String.valueOf(input.charAt(i));
+                i += 1;
+            }
+        }
+
         return Long.parseLong(seedStr);
+    }
+
+    /**
+     * Reads the move command of the player's input argument,
+     * then make Player move according to the command.
+     */
+    public String movePlayer(String input) {
+        int len = input.length();
+        // get the move cmd start index in input string
+        int i = 1;
+        while (input.charAt(i - 1) != 's' && input.charAt(i - 1) != 'S') {
+            i += 1;
+        }
+        // move player step by step
+        String cmdSeries = "";
+        while (i < len) {
+            if (input.charAt(i) == 'q' || input.charAt(i) == 'Q') {
+                if (input.charAt(i + 1) == 'l' || input.charAt(i + 1) == 'L') {
+                    i += 2;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            char cmd = input.charAt(i);
+            cmdSeries += cmd;
+            player.move(cmd);
+            i += 1;
+        }
+
+        return cmdSeries;
     }
 
     /* Returns whether a position is out of the map */
@@ -263,16 +302,18 @@ public class MapGenerator {
     }
 
     /* Render player, gate and key */
-    private void renderOthers() {
-        if (!player.hasKey) {
-            world[keyPos.x][keyPos.y] = Tileset.FLOWER;
-        }
+    public void renderOthers() {
         if (unlocked) {
             world[gatePos.x][gatePos.y] = Tileset.UNLOCKED_DOOR;
         } else {
             world[gatePos.x][gatePos.y] = Tileset.LOCKED_DOOR;
         }
-        world[player.currPos.x][player.currPos.y] = Tileset.PLAYER;
+
+        world[player.currPos.x][player.currPos.y] = Tileset.PLAYER; // render a player
+
+        if (!player.hasKey) {
+            world[keyPos.x][keyPos.y] = Tileset.KEY;
+        }
     }
 
     // Place a key in a random room
@@ -319,12 +360,6 @@ public class MapGenerator {
         return new Position(x, y);
     }
 
-    public void unlockGate() {
-        int gateDist = Math.abs(player.currPos.x - gatePos.x) + Math.abs(player.currPos.y - gatePos.y);
-        if (gateDist <= 1) {
-            unlocked = true;
-        }
-    }
 
     /* the character Object */
     public class Player {
@@ -341,6 +376,7 @@ public class MapGenerator {
         public void move(char cmd) {
             int x = currPos.x;
             int y = currPos.y;
+            world[x][y] = Tileset.FLOOR;
             if (cmd == 'w' || cmd == 'W') {
                 if (world[x][y + 1] == Tileset.FLOOR) {
                     currPos = new Position(x, y + 1);
@@ -348,7 +384,7 @@ public class MapGenerator {
             }
             if (cmd == 's' || cmd == 'S') {
                 if (world[x][y - 1] == Tileset.FLOOR) {
-                    currPos = new Position(x, y + 1);
+                    currPos = new Position(x, y - 1);
                 }
             }
             if (cmd == 'a' || cmd == 'A') {
@@ -361,10 +397,25 @@ public class MapGenerator {
                     currPos = new Position(x + 1, y);
                 }
             }
+            pickKey(); // automatically pick up key while moving
+            unlockGate(); // automatically unlock door while moving
         }
 
-        public boolean reachKey(Position key) {
-            return Math.abs(currPos.x - key.x) <= 1 && Math.abs(currPos.y - key.y) <= 1;
+        private boolean reachable(Position target) {
+            return Math.abs(currPos.x - target.x) + Math.abs(currPos.y - target.y) <= 1;
+        }
+
+        public void pickKey() {
+            if (reachable(keyPos)) {
+                hasKey = true;
+                world[keyPos.x][keyPos.y] = Tileset.FLOOR;
+            }
+        }
+
+        public void unlockGate() {
+            if (reachable(gatePos)) {
+                unlocked = true;
+            }
         }
     }
 

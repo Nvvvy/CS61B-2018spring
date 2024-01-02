@@ -13,15 +13,7 @@ public class Game {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
-//         TODO: no seed, requires a start menu to ask player to input seed
         GameUI gameUI = new GameUI();
-//         TODO: get the input then instantiate the world
-//
-//         TODO: solicit the user's input and parse it to character movements
-//
-//         TODO: move the character and refresh the screen
-//
-//         TODO: save the user's move command in a file and reload it while player loading
     }
 
     /**
@@ -40,8 +32,11 @@ public class Game {
         // Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-        long seed = MapGenerator.inputParser(input);
+        long seed = MapGenerator.seedParser(input);
         MapGenerator map = new MapGenerator(seed);
+
+        String moveCmd = map.movePlayer(input);
+        map.renderOthers();
 
         TETile[][] finalWorldFrame = map.finalWorld();
         return finalWorldFrame;

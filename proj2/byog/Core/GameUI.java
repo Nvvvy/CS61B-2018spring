@@ -3,7 +3,8 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 
 public class GameUI {
     private final int uiWidth;
@@ -72,10 +73,8 @@ public class GameUI {
         while (gameOn) {
             TETile[][] world = map.finalWorld();
             drawWorld(world);
-//            gameCmd = solicitNCharsInput('q');
-//            if (StdDraw.isKeyPressed('Q') || StdDraw.isKeyPressed('q')) {
-//                gameOn = false;
-//            }
+            gameCmd = solicitNCharsInput('q');
+            System.exit(0);
         }
     }
 
@@ -94,13 +93,17 @@ public class GameUI {
                             + " is null.");
                 }
                 world[x][y].draw(x + xOffset, y + yOffset);
+                map.renderOthers();// render player, key, gate
             }
         }
+
+        // Draw player, gate and key
+
 
         // Draw HUD
         StdDraw.setPenColor(Color.white);
         StdDraw.line(0, 2, uiWidth, 2);
-        StdDraw.textLeft(2, 1, "Q: exit game | W: up; | A: left | S: down | D: right");
+        StdDraw.textLeft(2, 1, "Q: save & exit | W: up; | A: left | S: down | D: right");
         StdDraw.show();
     }
 
@@ -113,7 +116,7 @@ public class GameUI {
         // Draw title
         Font bigFont = new Font("Monaco", Font.BOLD, 40);
         StdDraw.setFont(bigFont);
-        StdDraw.text(midWidth, uiHeight/4*3, "CS61B: THE GAME");
+        StdDraw.text(midWidth, uiHeight / 4 * 3, "CS61B: THE GAME");
 
         // Draw options
         Font smallFont = new Font("Monaco", Font.BOLD, 20);
@@ -131,13 +134,20 @@ public class GameUI {
         String input = "";
 
         while (gameOn) {
+            StdDraw.clear(Color.black);
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
             }
             char key = StdDraw.nextKeyTyped();
-            input += String.valueOf(key);
-            TETile[][] world = map.finalWorld();
-            drawWorld(world);
+            if (key == c || key == Character.toUpperCase(c)) {
+                break;
+            } else {
+                input += String.valueOf(key);
+                map.player.move(key);
+                TETile[][] world = map.finalWorld();
+                drawWorld(world);
+                StdDraw.show();
+            }
         }
         return input;
     }
@@ -167,9 +177,5 @@ public class GameUI {
     }
 
 
-
-//    private TETile[][] worldStatus() {
-//
-//    }
 
 }
