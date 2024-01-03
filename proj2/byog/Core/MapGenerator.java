@@ -3,9 +3,11 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Random;
 
-public class MapGenerator {
+public class MapGenerator implements Serializable {
     private static final int MINROOMS = 30;
     private static int roomCount;
     private Room[] rooms;
@@ -38,6 +40,40 @@ public class MapGenerator {
         return world;
     }
 
+    public static TETile[][] playWithString(String input) {
+        SerializableHelper<String> saveHelper = new SerializableHelper<>();
+        if (input.charAt(0) == 'l' || input.charAt(0) == 'L') {
+            String savedCmd = null;
+            try {
+                savedCmd = saveHelper.deserializeObj();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            String mergeCmd = savedCmd.substring(0, savedCmd.length() - 3) + input.substring(1);
+            try {
+                saveHelper.serializeObj(mergeCmd);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return playWithString(mergeCmd);
+        } else {
+            long seed = seedParser(input);
+            MapGenerator map = new MapGenerator(seed);
+
+            String moveCmd = map.movePlayer(input);
+            map.renderOthers();
+            try {
+                saveHelper.serializeObj(input);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            TETile[][] finalWorldFrame = map.finalWorld();
+            return finalWorldFrame;
+        }
+
+    }
+
     /**
      *  Reads the argument of player's input, then convert it to seed
      *  @param input the string inputted by player */
@@ -68,12 +104,12 @@ public class MapGenerator {
         // move player step by step
         String cmdSeries = "";
         while (i < len) {
-            if ((input.charAt(i) == ':') &&
-                    (input.charAt(i + 1) == 'q' || input.charAt(i + 1) == 'Q')) {
+            if ((input.charAt(i) == ':')
+                    && (input.charAt(i + 1) == 'q' || input.charAt(i + 1) == 'Q')) {
                 if (i == len - 2) {
                     break;
                 } else if (input.charAt(i + 2) == 'l' || input.charAt(i + 2) == 'L') {
-                    i += 2;
+                    i += 3;
                     continue;
                 }
             }
@@ -325,6 +361,7 @@ public class MapGenerator {
     }
 
     // generate a gate
+    // TODO: there is a bug
     private Position placeGate() {
         Room gateRoom = rooms[roomCount / 2];
         Position randPos = randomPosition(gateRoom.position.x, gateRoom.position.y,
@@ -420,7 +457,7 @@ public class MapGenerator {
         }
 
         public void unlockGate() {
-            if (reachable(gatePos)) {
+            if (reachable(gatePos) && hasKey) {
                 unlocked = true;
             }
         }
@@ -467,7 +504,7 @@ public class MapGenerator {
         }
 
         /* Check whether A and B at the same point */
-        private static boolean samePosition(Position A, Position B) {
+        public static boolean samePosition(Position A, Position B) {
             return A.x == B.x && A.y == B.y;
         }
 

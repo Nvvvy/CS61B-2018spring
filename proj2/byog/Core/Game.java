@@ -32,13 +32,18 @@ public class Game {
         // Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
-        long seed = MapGenerator.seedParser(input);
-        MapGenerator map = new MapGenerator(seed);
 
-        String moveCmd = map.movePlayer(input);
-        map.renderOthers();
 
-        TETile[][] finalWorldFrame = map.finalWorld();
+//        long seed = MapGenerator.seedParser(input);
+//        MapGenerator map = new MapGenerator(seed);
+//
+//        String moveCmd = map.movePlayer(input);
+//        map.renderOthers();
+//
+//
+//        TETile[][] finalWorldFrame = map.finalWorld();
+
+        TETile[][] finalWorldFrame = MapGenerator.playWithString(input);
         return finalWorldFrame;
     }
 }
