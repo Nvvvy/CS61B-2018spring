@@ -55,7 +55,7 @@ public class MapGeneratorTest {
     }
 
     @Test
-    public void serializeTest() throws Exception {
+    public void serializeTest() {
         String cmd = "N999SDDDWWWDDD";
         String cmd1 = "N999SDD:q";
         String cmd2 = "LDWWWDDD";
@@ -70,7 +70,26 @@ public class MapGeneratorTest {
         TETile[][] world2 = game.playWithInputString(cmd2);
 
         String strW = TETile.toString(world);
+        String strW1 = TETile.toString(world1);
         String strW2 = TETile.toString(world2);
         assertEquals(strW, strW2);
+    }
+
+    @Test
+    public void subStringTest() {
+        String input = "n3415218040718096461ssdsddaddaa:q";
+        long seed = MapGenerator.seedParser(input);
+        long expectSeed = 3415218040718096461L;
+        assertEquals(expectSeed, seed);
+        MapGenerator map = new MapGenerator(seed);
+
+        String movecmd = map.movePlayer(input);
+        String expectMove = "sdsddaddaa";
+        assertEquals(expectMove, movecmd);
+
+        String loadInput = "ldd";
+        int len = input.length();
+        assertEquals("n3415218040718096461ssdsddaddaa", input.substring(0,len - 2));
+        assertEquals("dd", loadInput.substring(1));
     }
 }

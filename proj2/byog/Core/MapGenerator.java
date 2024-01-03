@@ -3,7 +3,6 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -43,18 +42,11 @@ public class MapGenerator implements Serializable {
     public static TETile[][] playWithString(String input) {
         SerializableHelper<String> saveHelper = new SerializableHelper<>();
         if (input.charAt(0) == 'l' || input.charAt(0) == 'L') {
-            String savedCmd = null;
-            try {
-                savedCmd = saveHelper.deserializeObj();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            String mergeCmd = savedCmd.substring(0, savedCmd.length() - 3) + input.substring(1);
-            try {
-                saveHelper.serializeObj(mergeCmd);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String savedCmd = "";
+            savedCmd = saveHelper.deserializeObj();
+            String mergeCmd = savedCmd.substring(0, savedCmd.length() - 2) + input.substring(1);
+            saveHelper.serializeObj(mergeCmd);
+
             return playWithString(mergeCmd);
         } else {
             long seed = seedParser(input);
@@ -62,11 +54,7 @@ public class MapGenerator implements Serializable {
 
             String moveCmd = map.movePlayer(input);
             map.renderOthers();
-            try {
-                saveHelper.serializeObj(input);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            saveHelper.serializeObj(input);
 
             TETile[][] finalWorldFrame = map.finalWorld();
             return finalWorldFrame;
