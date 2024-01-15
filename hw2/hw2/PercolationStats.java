@@ -6,14 +6,14 @@ import edu.princeton.cs.introcs.StdStats;
 public class PercolationStats {
     private double[] stats;
     private final double C = 1.96;
-    private final int Times;
+    private final int times;
 
     /** perform T independent experiments on an N-by-N grid */
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0 || T <= 0) {
             throw new java.lang.IllegalArgumentException("bot N and should be positive int!");
         }
-        Times = T;
+        times = T;
         stats = new double[T];
         for (int i = 0; i < T; i += 1) {
             Percolation per = pf.make(N);
@@ -38,11 +38,11 @@ public class PercolationStats {
 
     /** low endpoint of 95% confidence interval */
     public double confidenceLow() {
-        return mean() - C * stddev() / Math.sqrt(Times);
+        return mean() - C * stddev() / Math.sqrt(times);
     }
 
     /** high endpoint of 95% confidence interval */
     public double confidenceHigh() {
-        return mean() + C * stddev() / Math.sqrt(Times);
+        return mean() + C * stddev() / Math.sqrt(times);
     }
 }

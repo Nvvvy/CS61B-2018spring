@@ -5,8 +5,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import java.util.HashSet;
 
 public class Percolation {
-    boolean isPercolated;
-    WeightedQuickUnionUF site;
+    private boolean isPercolated;
+    private WeightedQuickUnionUF site;
     private int N;
     private int openSites;
     private int[] siteStatus; // 0: locked; 1: open;
@@ -55,6 +55,9 @@ public class Percolation {
 
     /** open the site (row, col) if it is not open already */
     public void open(int row, int col) {
+        if (row >= N || col >= N) {
+            throw new java.lang.IndexOutOfBoundsException("Out of Bound");
+        }
         int ind = coToIndex(row, col);
         if (siteStatus[ind] == 0) {
             siteStatus[ind] = 1;
@@ -84,13 +87,21 @@ public class Percolation {
 
     /** is the site (row, col) open? */
     public boolean isOpen(int row, int col) {
-        return siteStatus[coToIndex(row, col)] == 1;
+        if (row >= N || col >= N) {
+            throw new java.lang.IndexOutOfBoundsException("Out of Bound");
+        } else {
+            return siteStatus[coToIndex(row, col)] == 1;
+        }
     }
 
     /** is the site (row, col) full? */
     public boolean isFull(int row, int col) {
-        int ind = coToIndex(row, col);
-        return site.connected(ind, 0) || site.connected(ind, N * N + 1);
+        if (row >= N || col >= N) {
+            throw new java.lang.IndexOutOfBoundsException("Out of Bound");
+        } else {
+            int ind = coToIndex(row, col);
+            return site.connected(ind, 0) || site.connected(ind, N * N + 1);
+        }
     }
 
     /** number of open sites */
