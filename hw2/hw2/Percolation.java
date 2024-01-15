@@ -19,7 +19,7 @@ public class Percolation {
         this.N = edgeLength;
         // 0 and N*N+1 index item represents water source or whatever
         site = new WeightedQuickUnionUF(N * N + 2);
-        siteStatus = new int[N * N];
+        siteStatus = new int[N * N + 2];
         openSites = 0;
         isPercolated = false;
     }
