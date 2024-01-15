@@ -2,6 +2,8 @@ package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+import java.util.HashSet;
+
 public class Percolation {
     boolean isPercolated;
     WeightedQuickUnionUF site;
@@ -37,12 +39,18 @@ public class Percolation {
         return (row == N - 1);
     }
 
-    private int[] findOpenNeighbour(int row, int col) {
+    private HashSet<Integer> findOpenNeighbour(int row, int col) {
         int up = coToIndex(Math.max(0, row - 1), col);
         int down = coToIndex(Math.min(row + 1, N - 1), col);
         int left = coToIndex(row, Math.max(0, col - 1));
         int right = coToIndex(row, Math.min(col + 1, N - 1));
-        return new int[]{up, down, left, right};
+
+        HashSet<Integer> neighbours = new HashSet<>();
+        neighbours.add(up);
+        neighbours.add(down);
+        neighbours.add(left);
+        neighbours.add(right);
+        return neighbours;
     }
 
     /** open the site (row, col) if it is not open already */
@@ -61,9 +69,9 @@ public class Percolation {
         }
 
         // union neighbours
-        int[] neighbours = findOpenNeighbour(row, col);
+        HashSet<Integer> neighbours = findOpenNeighbour(row, col);
         for (int i : neighbours) {
-            if (i != ind) {
+            if (siteStatus[i] == 1) {
                 site.union(i, ind);
             }
         }
@@ -76,7 +84,7 @@ public class Percolation {
 
     /** is the site (row, col) open? */
     public boolean isOpen(int row, int col) {
-        return siteStatus[coToIndex(row, col)] != 0;
+        return siteStatus[coToIndex(row, col)] == 1;
     }
 
     /** is the site (row, col) full? */
