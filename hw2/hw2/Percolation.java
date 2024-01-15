@@ -58,6 +58,7 @@ public class Percolation {
         if (row >= N || col >= N) {
             throw new java.lang.IndexOutOfBoundsException("Out of Bound");
         }
+
         int ind = coToIndex(row, col);
         if (siteStatus[ind] == 0) {
             siteStatus[ind] = 1;
@@ -67,7 +68,8 @@ public class Percolation {
         // check if this site is on top or bottom
         if (onTop(row, col)) {
             site.union(0, ind);
-        } else if (onBottom(row, col)) {
+        }
+        if (onBottom(row, col)) {
             site.union(N * N + 1, ind);
         }
 
@@ -77,11 +79,6 @@ public class Percolation {
             if (siteStatus[i] == 1) {
                 site.union(i, ind);
             }
-        }
-
-        // check whether this site percolates
-        if (site.connected(0, ind) && site.connected(N * N + 1, ind)) {
-            isPercolated = true;
         }
     }
 
@@ -111,7 +108,7 @@ public class Percolation {
 
     /** does the system percolate? */
     public boolean percolates() {
-        return isPercolated;
+        return site.connected(N * N + 1, 0);
     }
 
     // use for unit testing (not required)
