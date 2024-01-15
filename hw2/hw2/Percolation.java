@@ -100,7 +100,7 @@ public class Percolation {
             throw new java.lang.IndexOutOfBoundsException("Out of Bound");
         } else {
             int ind = coToIndex(row, col);
-            return site.connected(ind, 0) || site.connected(ind, N * N + 1);
+            return site.connected(ind, 0);
         }
     }
 
