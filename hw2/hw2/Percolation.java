@@ -5,8 +5,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import java.util.HashSet;
 
 public class Percolation {
-    private boolean isPercolated;
     private WeightedQuickUnionUF site;
+    private WeightedQuickUnionUF siteWithoutBot;
     private int N;
     private int openSites;
     private int[] siteStatus; // 0: locked; 1: open;
@@ -19,9 +19,9 @@ public class Percolation {
         this.N = edgeLength;
         // 0 and N*N+1 index item represents water source or whatever
         site = new WeightedQuickUnionUF(N * N + 2);
+        siteWithoutBot= new WeightedQuickUnionUF(N * N + 1);
         siteStatus = new int[N * N + 2];
         openSites = 0;
-        isPercolated = false;
     }
 
     // convert the 2D coordinate of site to the index of WQU obj.
@@ -68,6 +68,7 @@ public class Percolation {
         // check if this site is on top or bottom
         if (onTop(row, col)) {
             site.union(0, ind);
+            siteWithoutBot.union(0, ind);
         }
         if (onBottom(row, col)) {
             site.union(N * N + 1, ind);
@@ -78,6 +79,7 @@ public class Percolation {
         for (int i : neighbours) {
             if (siteStatus[i] == 1) {
                 site.union(i, ind);
+                siteWithoutBot.union(i, ind);
             }
         }
     }
@@ -97,7 +99,7 @@ public class Percolation {
             throw new java.lang.IndexOutOfBoundsException("Out of Bound");
         } else {
             int ind = coToIndex(row, col);
-            return site.connected(ind, 0);
+            return siteWithoutBot.connected(ind, 0);
         }
     }
 
@@ -109,9 +111,5 @@ public class Percolation {
     /** does the system percolate? */
     public boolean percolates() {
         return site.connected(N * N + 1, 0);
-    }
-
-    // use for unit testing (not required)
-    public static void main(String[] args) {
     }
 }
