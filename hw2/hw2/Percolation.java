@@ -19,7 +19,7 @@ public class Percolation {
         this.N = edgeLength;
         // 0 and N*N+1 index item represents water source or whatever
         site = new WeightedQuickUnionUF(N * N + 2);
-        siteWithoutBot= new WeightedQuickUnionUF(N * N + 1);
+        siteWithoutBot = new WeightedQuickUnionUF(N * N + 1);
         siteStatus = new int[N * N + 2];
         openSites = 0;
     }
@@ -111,5 +111,9 @@ public class Percolation {
     /** does the system percolate? */
     public boolean percolates() {
         return site.connected(N * N + 1, 0);
+    }
+
+    // use for unit testing (not required)
+    public static void main(String[] args) {
     }
 }
