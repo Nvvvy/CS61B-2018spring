@@ -26,10 +26,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         this.clear();
     }
 
-    public MyHashMap(int capacity) {
-        buckets = new ArrayMap[capacity];
-        this.clear();
-    }
 
     /* Removes all of the mappings from this map. */
     @Override
@@ -67,18 +63,19 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         if (!this.containsKey(key)) {
             size += 1;
         }
-        buckets[hash(key)].put(key, value);
 
         if (loadFactor() > MAX_LF) {
-            resize();
+            ArrayMap<K, V>[] copy = this.buckets;
+            buckets = new ArrayMap[copy.length * 2];
+            System.arraycopy(copy, 0, buckets, 0, copy.length);
+            for (int i = copy.length;i < buckets.length; i += 1) {
+                buckets[i] = new ArrayMap<>();
+            }
         }
+
+        buckets[hash(key)].put(key, value);
     }
 
-    private void resize() {
-        MyHashMap<K, V> newMap = new MyHashMap<>(buckets.length * 2);
-        System.arraycopy(buckets, 0, newMap.buckets, 0, buckets.length - 1);
-        buckets = newMap.buckets;
-    }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
