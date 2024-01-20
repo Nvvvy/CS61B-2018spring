@@ -44,21 +44,20 @@ public class TestComplexOomage {
 
 
         // Your code here.
-        int[] fixDigits = {17, 8, 10, 233};
-        int N = StdRandom.uniform(5, 10);
-        for (int n = 0; n < 100; n += 1) {
-            ArrayList<Integer> params = new ArrayList<>(N);
-            for (int i = 0; i < N; i += 1) {
-                if (i < 4) {
-                    params.add(fixDigits[i]);
+        for (int i = 0; i < 50; i += 1) {
+            ArrayList<Integer> params = new ArrayList<>(10);
+            for (int j = 0; j < 10; j += 1) {
+                if (j == 1) {
+                    params.add(255);
                 } else {
-                    params.add(StdRandom.uniform(0, 255));
+                    StdRandom.uniform(0, 255);
                 }
             }
             deadlyList.add(new ComplexOomage(params));
         }
 
-        assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 32));
+
+        assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 10));
     }
 
     /** Calls tests for SimpleOomage. */
