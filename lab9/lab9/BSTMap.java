@@ -113,7 +113,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (p != null) {
             keys.add(p.key);
             keys.addAll(getKeys(p.left));
-            keys.addAll(getKeys(p.left));
+            keys.addAll(getKeys(p.right));
         }
         return keys;
     }
@@ -137,7 +137,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return null;
         }
 
-        size -= 1;
+        if (containsKey(key)) {
+            size -= 1;
+        }
         int cmp = key.compareTo(p.key);
         if (cmp < 0) {
             p.left = remove(p.left, key);
