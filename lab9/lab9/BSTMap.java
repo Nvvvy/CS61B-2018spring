@@ -128,18 +128,14 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             throw new IllegalArgumentException("calls remove() with a null key");
         }
         V ret = get(key);
-        root = remove(root, key);
+        if (ret != null) {
+            root = remove(root, key);
+            size -= 1;
+        }
         return ret;
     }
 
     private Node remove(Node p, K key) {
-        if (p == null) {
-            return null;
-        }
-
-        if (containsKey(key)) {
-            size -= 1;
-        }
         int cmp = key.compareTo(p.key);
         if (cmp < 0) {
             p.left = remove(p.left, key);
@@ -181,10 +177,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /* remove the min key and value */
     public void deleteMin() {
         root = deleteMin(root);
+        size -= 1;
     }
 
     private Node deleteMin(Node p) {
-        size -= 1;
         if (p.left == null) {
             return p.right;
         }
