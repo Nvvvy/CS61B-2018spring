@@ -3,6 +3,7 @@ package hw4.puzzle;
 import edu.princeton.cs.algs4.MinPQ;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Solver {
     private MinPQ<SearchNode> bestMoves;
@@ -10,6 +11,7 @@ public class Solver {
     private SearchNode solution;
 
     public Solver(WorldState initial) {
+        bestMoves = new MinPQ<>();
         root = new SearchNode(initial, null);
         solution = aStarSearch();
     }
@@ -39,10 +41,10 @@ public class Solver {
     /**Returns a sequence of WorldStates from the initial WorldState
      to the solution.*/
     public Iterable<WorldState> solution() {
-        ArrayList<WorldState> ans = new ArrayList<>(solution.move + 1);
+        LinkedList<WorldState> ans = new LinkedList<>();
         SearchNode p = solution;
         for (int i = 0; i <= solution.move; i += 1) {
-            ans.set(solution.move - i, p.world);
+            ans.addFirst(p.world);
             p = p.prev;
         }
         return ans;
@@ -57,7 +59,11 @@ public class Solver {
         private SearchNode(WorldState w, SearchNode p) {
             world = w;
             prev = p;
-            move = p.move + 1;
+            if (p == null) {
+                move = 0;
+            } else {
+                move = p.move + 1;
+            }
         }
 
         public int compareTo(SearchNode o) {
