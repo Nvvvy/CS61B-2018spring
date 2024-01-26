@@ -24,7 +24,9 @@ public class Solver {
                 return p;
             } else {
                 for (WorldState w : p.world.neighbors()) {
-                    bestMoves.insert(new SearchNode(w, p));
+                    if (p.prev == null || !w.equals(p.prev.world)) {
+                        bestMoves.insert(new SearchNode(w, p));
+                    }
                 }
             }
         }
@@ -55,6 +57,7 @@ public class Solver {
         WorldState world;
         SearchNode prev;
         int move;
+        int estimatedDis;
 
         private SearchNode(WorldState w, SearchNode p) {
             world = w;
@@ -64,12 +67,11 @@ public class Solver {
             } else {
                 move = p.move + 1;
             }
+            estimatedDis = world.estimatedDistanceToGoal();
         }
 
         public int compareTo(SearchNode o) {
-            int myDis = world.estimatedDistanceToGoal() + move;
-            int otherDis = o.world.estimatedDistanceToGoal() + o.move;
-            return myDis - otherDis;
+            return (estimatedDis + move) - (o.estimatedDis + o.move);
         }
     }
 }
