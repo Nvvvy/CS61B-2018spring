@@ -104,8 +104,8 @@ public class Board implements WorldState{
     /* A helper method to calculate the move distance
      betweent current position and target position */
     private int tileDis(int row, int col) {
-        int targetRow = tileAt(row, col) / N;
-        int targetCol = tileAt(row, col) % N - 1;
+        int targetRow = (tileAt(row, col) - 1) / N;
+        int targetCol = (tileAt(row, col) - 1) % N;
         return Math.abs(row - targetRow) + Math.abs(col - targetCol);
     }
 
@@ -118,6 +118,7 @@ public class Board implements WorldState{
 
     /** Returns true if this board's tile values are the same
      position as y's */
+    @Override
     public boolean equals(Object y) {
         if (!(y instanceof Board)) {
             return false;
@@ -134,7 +135,8 @@ public class Board implements WorldState{
         return true;
     }
 
-    public int hashcode() {
+    @Override
+    public int hashCode() {
         String str = board.toString();
         return str.hashCode();
     }
