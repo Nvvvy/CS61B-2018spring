@@ -10,8 +10,13 @@ public class Board implements WorldState{
     /** Constructs a board from an N-by-N array of tiles where
      tiles[i][j] = tile at row i, column j */
     public Board(int[][] tiles) {
-        board = tiles;
-        N = board.length;
+        N = tiles.length;
+        board = new int[N][N];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                board[i][j] = tiles[i][j];
+            }
+        }
     }
 
     /** Returns value of tile at row i, column j (or 0 if blank) */
@@ -88,10 +93,9 @@ public class Board implements WorldState{
         int totalDis = 0;
         for (int row = 0; row < N; row++) {
             for (int col = 0; col < N; col++) {
-                if (tileAt(row, col) == BLANK) {
-                    continue;
+                if (tileAt(row, col) != BLANK) {
+                    totalDis += tileDis(row, col);
                 }
-                totalDis += tileDis(row, col);
             }
         }
         return totalDis;
@@ -117,6 +121,8 @@ public class Board implements WorldState{
     public boolean equals(Object y) {
         if (!(y instanceof Board)) {
             return false;
+        } else if (N != ((Board) y).N) {
+            return false;
         }
         for (int row = 0; row < N; row++) {
             for (int col = 0; col < N; col++) {
@@ -126,6 +132,11 @@ public class Board implements WorldState{
             }
         }
         return true;
+    }
+
+    public int hashcode() {
+        String str = board.toString();
+        return str.hashCode();
     }
 
 
