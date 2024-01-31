@@ -35,7 +35,13 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+        Queue<Queue<Item>> ret = new Queue<>();
+        for (Item i : items) {
+            Queue<Item> single = new Queue<>();
+            single.enqueue(i);
+            ret.enqueue(single);
+        }
+        return ret;
     }
 
     /**
@@ -54,13 +60,43 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> merged = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            merged.enqueue(getMin(q1, q2));
+        }
+        return merged;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        if (items.size() <= 1) {
+            return items;
+        }
+        Queue<Item> halfLeft = new Queue<>();
+        for (int i = 0; i < (items.size() / 2); i++) {
+            halfLeft.enqueue(items.dequeue());
+        }
+        return mergeSortedQueues(mergeSort(halfLeft), mergeSort(items));
+    }
+
+    /* A lightweight test */
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<String>();
+        students.enqueue("1");
+        students.enqueue("3");
+        students.enqueue("5");
+        students.enqueue("9");
+        students.enqueue("0");
+        students.enqueue("2");
+
+        String before = students.toString();
+        Queue<String> sorted = MergeSort.mergeSort(students);
+        String after = sorted.toString();
+
+        System.out.println("before sorting: " + before);
+        System.out.println("after  sorting: " + after);
+        System.out.println(!before.equals(after));
     }
 }
