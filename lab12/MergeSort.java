@@ -74,11 +74,22 @@ public class MergeSort {
         if (items.size() <= 1) {
             return items;
         }
-        Queue<Item> halfLeft = new Queue<>();
-        for (int i = 0; i < (items.size() / 2); i++) {
-            halfLeft.enqueue(items.dequeue());
+//        Queue<Item> halfLeft = new Queue<>();
+//        for (int i = 0; i < (items.size() / 2); i++) {
+//            halfLeft.enqueue(items.dequeue());
+//        }
+//        return mergeSortedQueues(mergeSort(halfLeft), mergeSort(items));
+        Queue<Queue<Item>> tmp = makeSingleItemQueues(items);
+        while (tmp.size() != 1) {
+            Queue<Queue<Item>> tmpp = new Queue<>();
+            while (!tmp.isEmpty()) {
+                Queue<Item> q1 = tmp.dequeue();
+                Queue<Item> q2 = tmp.isEmpty() ? new Queue<>() : tmp.dequeue();
+                tmpp.enqueue(mergeSortedQueues(q1, q2));
+            }
+            tmp = tmpp;
         }
-        return mergeSortedQueues(mergeSort(halfLeft), mergeSort(items));
+        return tmp.dequeue();
     }
 
     /* A lightweight test */
