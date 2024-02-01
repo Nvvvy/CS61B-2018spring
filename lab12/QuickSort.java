@@ -64,18 +64,20 @@ public class QuickSort {
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
         // Your code here!
-        if (items.size() <= 1) {
-            return items;
-        }
-
         Item pivot = getRandomItem(items);
         Queue<Item> less = new Queue<>();
         Queue<Item> equal = new Queue<>();
         Queue<Item> greater = new Queue<>();
         partition(items, pivot, less, equal, greater);
 
-        Queue<Item> left = catenate(quickSort(less), quickSort(equal));
-        return catenate(left, quickSort(greater));
+        if (!less.isEmpty()) {
+            less = quickSort(less);
+        }
+        if (!greater.isEmpty()) {
+            greater = quickSort(greater);
+        }
+
+        return catenate(catenate(less, equal), greater);
     }
 
     /* A lightweight test */
@@ -92,7 +94,7 @@ public class QuickSort {
         Queue<String> sorted = QuickSort.quickSort(students);
         String after = sorted.toString();
 
-        System.out.println("before sorting: " + before);
-        System.out.println("after  sorting: " + after);
+        System.out.println("before QuickSort: " + before);
+        System.out.println("after  QuickSort: " + after);
     }
 }
