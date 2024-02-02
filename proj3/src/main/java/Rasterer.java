@@ -8,9 +8,64 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    private Map<Integer, Double> depthMap;
+    private final double mapWidth;
+    private final double mapHeight;
 
     public Rasterer() {
         // YOUR CODE HERE
+
+        mapWidth = MapServer.ROOT_LRLON - MapServer.ROOT_ULLON;
+        mapHeight = MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT;
+        depthMap = imgLonDPPMap();
+    }
+
+    private Map<Integer, Double> imgLonDPPMap() {
+        Map<Integer, Double> map = new HashMap<>();
+
+        for (int d = 0; d <= 7; d++) {
+            double LonDPP = mapWidth / (MapServer.TILE_SIZE * Math.pow(2, d));
+            map.put(d, LonDPP);
+        }
+        return map;
+    }
+
+    /* find depth with proper LonDPP of image to render the map */
+    private int findDepth(double box) {
+        int depth = 0;
+        for (int i = 0; i <= 7; i++) {
+            depth = i;
+            if (box > depthMap.get(i)) {
+                break;
+            }
+        }
+        return depth;
+    }
+
+    /* find the upper-left column/x of the image grid */
+    private int gridColumn(int depth, double lon) {
+        double imgLon = mapWidth / Math.pow(2, depth);
+        return (int) Math.floor((lon - MapServer.ROOT_ULLON) / imgLon);
+    }
+
+    /* find the upper-left row/y of the image grid */
+    private int gridRow(int depth, double lat) {
+        double imgLat = mapHeight / Math.pow(2, depth);
+        return (int) Math.floor((MapServer.ROOT_ULLAT - lat) / imgLat);
+    }
+
+    /* Generates a filename grid of images with given start coordinate and size */
+    private String[][] renderGridFile(int depth, int startX, int startY, int rows, int cols) {
+        String[][] renderGrid = new String[rows][cols];
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                int imgX = x + startX;
+                int imgY = y + startY;
+                String fileName = "d" + depth + "_x" + imgX + "_y" + imgY + ".png";
+                renderGrid[y][x] = fileName;
+            }
+        }
+        return renderGrid;
     }
 
     /**
@@ -42,11 +97,70 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        System.out.println(params);
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+//        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
+//                           + "your browser.");
+
+
+        // get queryBox info
+        double lrlon = params.get("lrlon");
+        double lrlat = params.get("lrlat");
+        double ullon = params.get("ullon");
+        double ullat = params.get("ullat");
+        double w = params.get("w");
+        double h = params.get("h");
+
+        // check corner case for invalid query
+        boolean outOfRange = lrlon < MapServer.ROOT_ULLON
+                || ullon > MapServer.ROOT_LRLON
+                || ullat < MapServer.ROOT_LRLAT
+                || lrlat > MapServer.ROOT_ULLAT;
+
+        boolean invalidCoordinate = ullon > lrlon || ullat < lrlat;
+
+        boolean querySuccess = !(outOfRange || invalidCoordinate);
+
+        // find proper depth with the queryBox LonDPP
+        double boxLonDPP = (lrlon - ullon) / w;
+        int depth = findDepth(boxLonDPP);
+
+        // find the upper-left index of the image grid
+        int startRow = gridRow(depth, ullat);
+        int startCol = gridColumn(depth, ullon);
+
+        // calculates the column and row of the render grid
+        int rows = gridRow(depth, lrlat) - startRow + 1;
+        int columns = gridColumn(depth, lrlon) - startCol + 1;
+
+        // calculates the coordinate of ul&lr img;
+        double imgLonW = mapWidth / Math.pow(2, depth);
+        double imgLatH = mapHeight / Math.pow(2, depth);
+        double ulImgLon = MapServer.ROOT_ULLON + imgLonW * startCol;
+        double ulImgLat = MapServer.ROOT_ULLAT - imgLatH * startRow;
+        double lrImgLon = ulImgLon + imgLonW * columns;
+        double lrImgLat = ulImgLat - imgLatH * rows;
+
+        // generate a filename 2D grid of images to be displayed
+        String[][] renderGrid = (querySuccess)?
+                renderGridFile(depth, startCol, startRow, rows, columns) : null;
+
+
+
+        results.put("render_grid", renderGrid);
+        results.put("raster_ul_lon", ulImgLon);
+        results.put("raster_ul_lat", ulImgLat);
+        results.put("raster_lr_lon", lrImgLon);
+        results.put("raster_lr_lat", lrImgLat);
+        results.put("depth", depth);
+        results.put("query_success", querySuccess);
+
         return results;
+    }
+
+    public static void main(String[] args) {
+        Rasterer raster = new Rasterer();
+
     }
 
 }
