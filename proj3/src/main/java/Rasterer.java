@@ -24,8 +24,8 @@ public class Rasterer {
         Map<Integer, Double> map = new HashMap<>();
 
         for (int d = 0; d <= 7; d++) {
-            double LonDPP = mapWidth / (MapServer.TILE_SIZE * Math.pow(2, d));
-            map.put(d, LonDPP);
+            double lonDPP = mapWidth / (MapServer.TILE_SIZE * Math.pow(2, d));
+            map.put(d, lonDPP);
         }
         return map;
     }
@@ -97,11 +97,10 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        System.out.println(params);
+//        System.out.println(params);
         Map<String, Object> results = new HashMap<>();
 //        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
 //                           + "your browser.");
-
 
         // get queryBox info
         double lrlon = params.get("lrlon");
@@ -142,10 +141,8 @@ public class Rasterer {
         double lrImgLat = ulImgLat - imgLatH * rows;
 
         // generate a filename 2D grid of images to be displayed
-        String[][] renderGrid = (querySuccess)?
-                renderGridFile(depth, startCol, startRow, rows, columns) : null;
-
-
+        String[][] renderGrid = (querySuccess)
+                ? renderGridFile(depth, startCol, startRow, rows, columns) : null;
 
         results.put("render_grid", renderGrid);
         results.put("raster_ul_lon", ulImgLon);

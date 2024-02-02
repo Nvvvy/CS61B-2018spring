@@ -1,22 +1,13 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.Color;
+import com.google.gson.Gson;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 import java.io.IOException;
-
-
-/* Maven is used to pull in these dependencies. */
-import com.google.gson.Gson;
+import java.util.List;
+import java.util.*;
 
 import static spark.Spark.*;
 
@@ -332,7 +323,7 @@ public class MapServer {
     private static String getDirectionsText() {
         List<Router.NavigationDirection> directions = Router.routeDirections(graph, route);
         if (directions == null || directions.isEmpty()) {
-          return "";
+            return "";
         }
         StringBuilder sb = new StringBuilder();
         int step = 1;
