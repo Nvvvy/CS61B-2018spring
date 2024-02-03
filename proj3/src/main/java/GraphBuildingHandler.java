@@ -2,6 +2,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +39,9 @@ public class GraphBuildingHandler extends DefaultHandler {
                     "secondary_link", "tertiary_link"));
     private String activeState = "";
     private final GraphDB g;
+    private GraphDB.Node lastNode;
+    private GraphDB.Way currentWay;
+    private ArrayList<GraphDB.Node> possibleConnections;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -45,6 +49,8 @@ public class GraphBuildingHandler extends DefaultHandler {
      */
     public GraphBuildingHandler(GraphDB g) {
         this.g = g;
+        currentWay = null;
+        lastNode = null;
     }
 
     /**
@@ -74,11 +80,19 @@ public class GraphBuildingHandler extends DefaultHandler {
 
             /* TODO Use the above information to save a "node" to somewhere. */
             /* Hint: A graph-like structure would be nice. */
+            GraphDB.Node node = new GraphDB.Node(Long.parseLong(attributes.getValue("id")),
+                    new Double(attributes.getValue("lon")),
+                    new Double(attributes.getValue("lat")));
+            g.addNode(node);
+            lastNode = node;
 
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
 //            System.out.println("Beginning a way...");
+            possibleConnections = new ArrayList<>();
+            currentWay = new GraphDB.Way(Long.parseLong(attributes.getValue("id")));
+
         } else if (activeState.equals("way") && qName.equals("nd")) {
             /* While looking at a way, we found a <nd...> tag. */
             //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
@@ -89,6 +103,9 @@ public class GraphBuildingHandler extends DefaultHandler {
             cumbersome since you might have to remove the connections if you later see a tag that
             makes this way invalid. Instead, think of keeping a list of possible connections and
             remember whether this way is valid or not. */
+            long nodeId = Long.parseLong(attributes.getValue("ref"));
+            possibleConnections.add(g.vertices.get(nodeId));
+
 
         } else if (activeState.equals("way") && qName.equals("tag")) {
             /* While looking at a way, we found a <tag...> tag. */
@@ -97,12 +114,19 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (k.equals("maxspeed")) {
                 //System.out.println("Max Speed: " + v);
                 /* TODO set the max speed of the "current way" here. */
+                currentWay.tags.put(k, v);
             } else if (k.equals("highway")) {
                 //System.out.println("Highway type: " + v);
                 /* TODO Figure out whether this way and its connections are valid. */
                 /* Hint: Setting a "flag" is good enough! */
+                if (ALLOWED_HIGHWAY_TYPES.contains(v)) {
+                    currentWay.tags.put("validRoute", "true");
+                } else {
+                    currentWay.tags.put("validRoute", "false");
+                }
             } else if (k.equals("name")) {
                 //System.out.println("Way Name: " + v);
+                currentWay.tags.put(k, v);
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
@@ -113,6 +137,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
 //            System.out.println("Node's name: " + attributes.getValue("v"));
+            lastNode.tags.put("name", attributes.getValue("v"));
         }
     }
 
@@ -134,6 +159,13 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* Hint1: If you have stored the possible connections for this way, here's your
             chance to actually connect the nodes together if the way is valid. */
 //            System.out.println("Finishing a way...");
+            if (currentWay.tags.get("validRoute").equals("true")) {
+                for (int i = 1; i < possibleConnections.size(); i++) {
+                    g.addEdge(possibleConnections.get(i - 1),
+                            possibleConnections.get(i),
+                            currentWay);
+                }
+            }
         }
     }
 
