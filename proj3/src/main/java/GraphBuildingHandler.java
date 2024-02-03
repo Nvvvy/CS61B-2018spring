@@ -159,6 +159,9 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* Hint1: If you have stored the possible connections for this way, here's your
             chance to actually connect the nodes together if the way is valid. */
 //            System.out.println("Finishing a way...");
+            if (currentWay.tags == null || !currentWay.tags.containsKey("validRoute")) {
+                return;
+            }
             if (currentWay.tags.get("validRoute").equals("true")) {
                 for (int i = 1; i < possibleConnections.size(); i++) {
                     g.addEdge(possibleConnections.get(i - 1),
