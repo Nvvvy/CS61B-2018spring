@@ -122,13 +122,6 @@ public class Router {
          * Relaxes the adjacent node: update disTo, edgeTo and fringe
          */
         private void relaxAdj(long v, long w) {
-            if (marked.contains(w)) {
-                return;
-            }
-
-            if (!fringe.isEmpty() && marked.contains(fringe.peek().id)) {
-                fringe.poll();
-            }
 
             /* if w has not been marked or disTo(w) < disTo(v) + actualDis(v, w),
                then update disTo and edgeTo  */
