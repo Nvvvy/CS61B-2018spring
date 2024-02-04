@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +24,15 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        // find closest node near start and destination
+        long startId = g.closest(stlon, stlat);
+        long destId = g.closest(destlon, destlat);
+
+        AStarSP aStar = new AStarSP(g, startId, destId);
+
+        return  aStar.aStarSearch();// FIXME
     }
+
 
     /**
      * Create the list of directions corresponding to a route on the graph.
@@ -38,6 +44,139 @@ public class Router {
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
         return null; // FIXME
+    }
+
+
+    /**
+     * Helper class to run A* algo
+     */
+    public static class AStarSP {
+        private GraphDB g;
+        private long s;
+        private long t;
+        private HashSet<Long> marked;
+        private HashMap<Long, Double> disTo;
+        private HashMap<Long, Long> edgeTo;
+        private PriorityQueue<NodeDisPair> fringe;
+
+        public AStarSP(GraphDB g, long s, long t) {
+            this.g = g;
+            this.s = s;
+            this.t = t;
+            marked = new HashSet<>();
+            disTo = new HashMap<>();
+            edgeTo = new HashMap<>();
+            fringe = new PriorityQueue<>();
+        }
+
+        /**
+         * Run A* algorithm
+         */
+        public List<Long> aStarSearch() {
+
+            double initEst = heuristic(s, t);
+            disTo.put(s, (double) 0);
+            fringe.add(new NodeDisPair(s, initEst));
+
+            while (!fringe.isEmpty()) {
+                NodeDisPair v = fringe.poll();
+                if (marked.contains(v.id)) {
+                    continue;
+                }
+                marked.add(v.id);
+                for (long w : g.adjacent(v.id)) {
+                    relaxAdj(v.id, w);
+                }
+            }
+            return findPath();
+        }
+
+
+        private List<Long> findPath() {
+            LinkedList<Long> route = new LinkedList<>();
+            route.addFirst(t);
+            long curr = t;
+
+            while (route.getFirst() != s) {
+                long vToCurr = edgeTo.get(curr);
+                route.addFirst(vToCurr);
+                curr = vToCurr;
+            }
+            return route;
+        }
+
+        /**
+         * Returns the estimated distance between the vertex curr and dest
+         * @return great-circle distance.
+         */
+        private double heuristic(long startId, long destId) {
+            double stlon = g.vertices.get(startId).lon;
+            double stlat = g.vertices.get(startId).lon;
+
+            double destlon = g.vertices.get(destId).lon;
+            double destlat = g.vertices.get(destId).lat;
+            return GraphDB.distance(stlon, stlat, destlon, destlat);
+        }
+
+        /**
+         * Relaxes the adjacent node: update disTo, edgeTo and fringe
+         */
+        private void relaxAdj(long v, long w) {
+            if (marked.contains(w)) {
+                return;
+            }
+
+            if (!fringe.isEmpty() && marked.contains(fringe.peek().id)) {
+                fringe.poll();
+            }
+
+            /* if w has not been marked or disTo(w) < disTo(v) + actualDis(v, w),
+               then update disTo and edgeTo  */
+            double vwDis = actualDis(v, w);
+            if (!edgeTo.containsKey(w) || disTo.get(v) + vwDis < disTo.get(w)) {
+                edgeTo.put(w, v);
+                disTo.put(w, disTo.get(v) + vwDis);
+            }
+
+            double totalDis = heuristic(w, t) + disTo.get(w);
+            fringe.add(new NodeDisPair(w, totalDis));
+        }
+
+        /**
+         * Calculates the actual great-circle distance between v and w
+         */
+        private double actualDis(long v, long w) {
+            double vLon = g.vertices.get(v).lon;
+            double vLat = g.vertices.get(v).lat;
+            double wLon = g.vertices.get(w).lon;
+            double wLat = g.vertices.get(w).lat;
+            return GraphDB.distance(vLon, vLat, wLon, wLat);
+        }
+
+    }
+
+    /**
+     * A helper class for shortestPath method to implement a minPQ for A* algorithm.
+     */
+    private static class NodeDisPair implements Comparable<NodeDisPair> {
+        private long id;
+        private double distance;
+
+        NodeDisPair(long id, double distance) {
+            this.id = id;
+            this.distance = distance;
+        }
+
+        public int compareTo(NodeDisPair o) {
+            double cmp = distance - o.distance;
+            if (cmp < 0) {
+                return -1;
+            } else if (cmp == 0) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 
 
@@ -65,7 +204,7 @@ public class Router {
 
         /** Default name for an unknown way. */
         public static final String UNKNOWN_ROAD = "unknown road";
-        
+
         /** Static initializer. */
         static {
             DIRECTIONS[START] = "Start";
