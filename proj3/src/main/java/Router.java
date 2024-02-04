@@ -30,7 +30,7 @@ public class Router {
 
         AStarSP aStar = new AStarSP(g, startId, destId);
 
-        return aStar.SP();
+        return aStar.shortestPath;
     }
 
 
@@ -58,7 +58,7 @@ public class Router {
         private HashMap<Long, Double> disTo;
         private HashMap<Long, Long> edgeTo;
         private PriorityQueue<NodeDisPair> fringe;
-        private List<Long> shortestPath;
+        public List<Long> shortestPath;
 
         public AStarSP(GraphDB g, long s, long t) {
             this.g = g;
@@ -102,14 +102,21 @@ public class Router {
             route.addFirst(t);
             long curr = t;
 
-            while (route.getFirst() != s) {
-                if (!edgeTo.containsKey(curr)) {
-                    break;
-                }
+//            while (route.getFirst() != s) {
+//                if (!edgeTo.containsKey(curr)) {
+//                    break;
+//                }
+//                long vToCurr = edgeTo.get(curr);
+//                route.addFirst(vToCurr);
+//                curr = vToCurr;
+//            }
+
+            while (curr != s) {
                 long vToCurr = edgeTo.get(curr);
                 route.addFirst(vToCurr);
                 curr = vToCurr;
             }
+
             return route;
         }
 
@@ -159,10 +166,6 @@ public class Router {
             double wLon = g.vertices.get(w).lon;
             double wLat = g.vertices.get(w).lat;
             return GraphDB.distance(vLon, vLat, wLon, wLat);
-        }
-
-        public List<Long> SP() {
-            return shortestPath;
         }
     }
 
