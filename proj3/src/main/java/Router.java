@@ -82,6 +82,9 @@ public class Router {
 
             while (!fringe.isEmpty()) {
                 NodeDisPair v = fringe.poll();
+                if (v.id == t) {
+                    break;
+                }
                 if (marked.contains(v.id)) {
                     continue;
                 }
