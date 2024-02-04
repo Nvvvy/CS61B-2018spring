@@ -68,13 +68,14 @@ public class Router {
             disTo = new HashMap<>();
             edgeTo = new HashMap<>();
             fringe = new PriorityQueue<>();
-            shortestPath = aStarSearch();
+            aStarSearch();
+            shortestPath = findPath();
         }
 
         /**
          * Run A* algorithm
          */
-        private List<Long> aStarSearch() {
+        private void aStarSearch() {
 
             double initEst = heuristic(s, t);
             disTo.put(s, (double) 0);
@@ -93,7 +94,6 @@ public class Router {
                     relaxAdj(v.id, w);
                 }
             }
-            return findPath();
         }
 
 
@@ -103,6 +103,9 @@ public class Router {
             long curr = t;
 
             while (route.getFirst() != s) {
+                if (!edgeTo.containsKey(curr)) {
+                    break;
+                }
                 long vToCurr = edgeTo.get(curr);
                 route.addFirst(vToCurr);
                 curr = vToCurr;
