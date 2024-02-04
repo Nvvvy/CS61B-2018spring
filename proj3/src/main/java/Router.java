@@ -30,7 +30,7 @@ public class Router {
 
         AStarSP aStar = new AStarSP(g, startId, destId);
 
-        return  aStar.aStarSearch();// FIXME
+        return aStar.SP();
     }
 
 
@@ -58,6 +58,7 @@ public class Router {
         private HashMap<Long, Double> disTo;
         private HashMap<Long, Long> edgeTo;
         private PriorityQueue<NodeDisPair> fringe;
+        private List<Long> shortestPath;
 
         public AStarSP(GraphDB g, long s, long t) {
             this.g = g;
@@ -67,12 +68,13 @@ public class Router {
             disTo = new HashMap<>();
             edgeTo = new HashMap<>();
             fringe = new PriorityQueue<>();
+            shortestPath = aStarSearch();
         }
 
         /**
          * Run A* algorithm
          */
-        public List<Long> aStarSearch() {
+        private List<Long> aStarSearch() {
 
             double initEst = heuristic(s, t);
             disTo.put(s, (double) 0);
@@ -153,6 +155,9 @@ public class Router {
             return GraphDB.distance(vLon, vLat, wLon, wLat);
         }
 
+        public List<Long> SP() {
+            return shortestPath;
+        }
     }
 
     /**
