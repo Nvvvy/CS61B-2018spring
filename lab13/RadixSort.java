@@ -17,7 +17,19 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        return null;
+        // get the greatest length of all strings
+        int len = 0;
+        for (String s : asciis) {
+            len = Math.max(s.length(), len);
+        }
+
+        // fill the String to length 'len'
+        String[] sorted = new String[asciis.length];
+        System.arraycopy(asciis, 0, sorted, 0, asciis.length);
+        for (int i = 1; i <= len; i++) {
+            sortHelperLSD(sorted, len - i);
+        }
+        return sorted;
     }
 
     /**
@@ -27,8 +39,34 @@ public class RadixSort {
      * @param index The position to sort the Strings on.
      */
     private static void sortHelperLSD(String[] asciis, int index) {
-        // Optional LSD helper method for required LSD radix sort
-        return;
+        // build count list
+        int[] count = new int[256];
+        for (String s : asciis) {
+            if (index >= s.length()) {
+                count[0] += 1;
+            } else {
+                int code = (int) s.charAt(index);
+                count[code] += 1;
+            }
+        }
+
+        // build start list
+        int[] start = new int[256];
+        int pos = 0;
+        for (int i = 0; i < 256; i++) {
+            start[i] = pos;
+            pos += count[i];
+        }
+
+        // sort according to the index digit
+        String[] sorted = new String[asciis.length];
+        for (String s : asciis) {
+            int code = index >= s.length() ? 0 : (int) s.charAt(index);
+            int place = start[code];
+            sorted[place] = s;
+            start[code] += 1;
+        }
+        System.arraycopy(sorted, 0, asciis, 0, asciis.length);
     }
 
     /**
