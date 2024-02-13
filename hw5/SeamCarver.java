@@ -8,7 +8,7 @@ public class SeamCarver {
     private int H;
 
     public SeamCarver(Picture picture) {
-        pic = picture;
+        pic = new Picture(picture);
         W = pic.width();
         H = pic.height();
     }
@@ -133,20 +133,22 @@ public class SeamCarver {
 
     // remove horizontal seam from picture
     public void removeHorizontalSeam(int[] seam) {
-        if (seam.length != W || !isValidSeam(seam)) {
+        if (seam.length != width() || !isValidSeam(seam)) {
             throw new IllegalArgumentException();
+        } else {
+            H -= 1;
+            SeamRemover.removeHorizontalSeam(pic, seam);
         }
-        H -= 1;
-        SeamRemover.removeHorizontalSeam(pic, seam);
     }
 
     // remove vertical seam from picture
     public  void removeVerticalSeam(int[] seam) {
-        if (seam.length != H || !isValidSeam(seam)) {
+        if (seam.length != height() || !isValidSeam(seam)) {
             throw new IllegalArgumentException();
+        } else {
+            W -= 1;
+            SeamRemover.removeVerticalSeam(pic, seam);
         }
-        W -= 1;
-        SeamRemover.removeVerticalSeam(pic, seam);
     }
 
     // Returns false if two consecutive position in seam differ by more than 1
