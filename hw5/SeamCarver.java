@@ -136,8 +136,8 @@ public class SeamCarver {
         if (seam.length != width() || !isValidSeam(seam)) {
             throw new IllegalArgumentException();
         } else {
-            H -= 1;
             SeamRemover.removeHorizontalSeam(pic, seam);
+            H -= 1;
         }
     }
 
@@ -146,14 +146,14 @@ public class SeamCarver {
         if (seam.length != height() || !isValidSeam(seam)) {
             throw new IllegalArgumentException();
         } else {
-            W -= 1;
             SeamRemover.removeVerticalSeam(pic, seam);
+            W -= 1;
         }
     }
 
     // Returns false if two consecutive position in seam differ by more than 1
     private boolean isValidSeam(int[] seam) {
-        for (int i = 1; i < seam.length; i++) {
+        for (int i = 0; i < seam.length - 2; ++i) {
             if (Math.abs(seam[i] - seam[i - 1]) > 1) {
                 return false;
             }
