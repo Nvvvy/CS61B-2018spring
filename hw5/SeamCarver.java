@@ -142,7 +142,7 @@ public class SeamCarver {
     }
 
     // remove vertical seam from picture
-    public  void removeVerticalSeam(int[] seam) {
+    public void removeVerticalSeam(int[] seam) {
         if (seam.length != height() || !isValidSeam(seam)) {
             throw new IllegalArgumentException();
         } else {
@@ -154,7 +154,7 @@ public class SeamCarver {
     // Returns false if two consecutive position in seam differ by more than 1
     private boolean isValidSeam(int[] seam) {
         for (int i = 0; i < seam.length - 2; ++i) {
-            if (Math.abs(seam[i] - seam[i - 1]) > 1) {
+            if (Math.abs(seam[i] - seam[i + 1]) > 1) {
                 return false;
             }
         }
